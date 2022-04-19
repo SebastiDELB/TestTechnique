@@ -8,6 +8,9 @@
       "sslPort": 44307
     }
   },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Port=5432;Database=vs-postgresql-1;User Id=postgres;"
+  },
   "profiles": {
     "TestTechnique.Api": {
       "commandName": "Project",

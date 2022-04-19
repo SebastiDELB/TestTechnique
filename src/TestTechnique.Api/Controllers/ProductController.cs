@@ -14,42 +14,66 @@ public class ProductController : ControllerBase
     public ProductController(ILogger<ProductController> logger, IProductRepository productRepository)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _productRepository = productRepository ?? throw new ArgumentNullException(nameof(logger));
+        _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var products = _productRepository.GetAsync();
+        var products = await _productRepository.GetAsync();
         return Ok(products);
     }
     
     [HttpGet("{id:guid}")]
-    public IActionResult Get([FromRoute] Guid id)
+    public async Task<IActionResult> GetAsync([FromRoute] Guid id)
     {
-        return Ok();
+        var product = await _productRepository.GetAsync(id);
+        if(product == null)
+            return NotFound();
+        return Ok(product);
     }
     
     [HttpPost]
-    public async Task<IActionResult> Post([FromQuery] Product product)
+    public async Task<IActionResult> Post([FromForm] Product product)
     {
-        await _productRepository.AddAsync(product);
-        return NoContent();
+        var res = await _productRepository.AddAsync(product);
+        if(res == Guid.Empty)
+            return BadRequest();
         _logger.LogInformation($"The {product.Name} has been added with the ID:{product.Id}.");
+        return Ok(res);
+        
     }
     
-    [HttpPut("{id:guid}")]
-    public IActionResult Put([FromHeader] Guid id, [FromRoute] Product product)
+    [HttpPut]
+    public async Task<IActionResult> Put([FromForm] Product product)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _productRepository.UpdateAsync(product);
+            _logger.LogInformation($"The {product.Name} has been updated");
+            return Ok();
+        }
+        catch
+        {
+            return NotFound();
+        }
     }
     
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromHeader] Guid id)
+    public async Task<IActionResult> Delete( [FromForm] Product product)
     {
-        var product = new Product { Id = id };
-        await _productRepository.DeleteAsync(product);
-        Console.Write("The product with ID: {0} has been deleted.", id);
-        return NotFound();
+        try
+        {
+            await _productRepository.DeleteAsync(product);
+            _logger.LogInformation($"The product with ID: {product.Id} has been deleted.");
+            return Ok();
+        }
+        catch
+        {
+            return NotFound();
+        }
+
+        
+       
     }
 }

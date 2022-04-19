@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TestTechnique.Core.Models;
 using TestTechnique.Core.Repositories;
 
@@ -9,17 +10,20 @@ public class ProductRepository : IProductRepository
 
     public ProductRepository(TestTechniqueDbContext dbContext)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _dbContext = dbContext;
     }
 
-    public Task<IEnumerable<Product>> GetAsync()
+    public async Task<IEnumerable<Product>> GetAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.Products.ToListAsync();
     }
 
-    public Task<Product> GetAsync(Guid id)
+    public async Task<Product> GetAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var res = await _dbContext.Products.FindAsync(id);
+        if(res == null)
+            return new Product();
+        return res;
     }
 
     public Task<Product> GetAsync(Guid id, bool asTracking)
@@ -27,37 +31,110 @@ public class ProductRepository : IProductRepository
         throw new NotImplementedException();
     }
 
-    public Task<Guid> AddAsync(Product entity)
+    public async Task<Guid> AddAsync(Product product)
     {
-        throw new NotImplementedException();
+
+        try
+        {
+            var result = await _dbContext.Products.AddAsync(product);
+            await _dbContext.SaveChangesAsync();
+            return product.Id;
+        }
+        catch
+        {
+            return Guid.Empty;
+        }
     }
 
-    public Task<IEnumerable<Guid>> AddAsync(IEnumerable<Product> entities)
+    public async Task<IEnumerable<Guid>> AddAsync(IEnumerable<Product> products)
     {
-        throw new NotImplementedException();
+        List<Guid> ids = new List<Guid>();
+        try
+        {
+            foreach (var product in products)
+            {
+                await _dbContext.Products.AddAsync(product);
+                ids.Add(product.Id);
+            }
+            await _dbContext.SaveChangesAsync();
+            return ids;
+        }
+        catch
+        {
+            return ids;
+        }
+       
     }
 
-    public Task UpdateAsync(Product entity)
+    public async Task UpdateAsync(Product product)
     {
-        throw new NotImplementedException();
+        var result = await _dbContext.Products
+               .FirstOrDefaultAsync(p => p.Id == product.Id);
+
+        if (result != null)
+        {
+            result.Name = product.Name;
+            result.Description = product.Description;
+            result.Price = product.Price;
+
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
-    public Task UpdateAsync(IEnumerable<Product> entities)
+    public async Task UpdateAsync(IEnumerable<Product> products)
     {
-        throw new NotImplementedException();
+        foreach(var product in products)
+        {
+            var result = await _dbContext.Products
+              .FirstOrDefaultAsync(p => p.Id == product.Id);
+
+            if (result != null)
+            {
+                result.Name = product.Name;
+                result.Description = product.Description;
+                result.Price = product.Price;
+
+                await _dbContext.SaveChangesAsync();
+            }
+        }
     }
 
-    public Task DeleteAsync(Product entity)
+    public async Task DeleteAsync(Product product)
     {
-        throw new NotImplementedException();
+        var result = await _dbContext.Products
+                 .FirstOrDefaultAsync(p => p.Id == product.Id);
+        if (result != null)
+        {
+            _dbContext.Products.Remove(result);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
-    public Task DeleteAsync(IEnumerable<Product> entities)
+    public async Task DeleteAsync(IEnumerable<Product> products)
     {
-        throw new NotImplementedException();
+        foreach(Product product in products)
+        {
+            var result = await _dbContext.Products
+                 .FirstOrDefaultAsync(p => p.Id == product.Id);
+            if (result != null)
+            {
+                _dbContext.Products.Remove(result);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
     }
 
-    public Task<Product> GetByNameAsync(string name)
+    public async Task<Product> GetByNameAsync(string name)
+    {
+        var result = await _dbContext.Products
+                  .FirstOrDefaultAsync(p => p.Name == name);
+        if(result != null) 
+            return result;
+
+        return null;
+    }
+
+    Task<Guid> IEntityRepository<Product>.AddAsync(Product entity)
     {
         throw new NotImplementedException();
     }

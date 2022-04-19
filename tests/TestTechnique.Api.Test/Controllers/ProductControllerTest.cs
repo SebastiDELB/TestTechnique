@@ -49,7 +49,7 @@ public class ProductControllerTest
             .ReturnsAsync(new Product());
         
         // Act
-        var response = await _productController.Get(Guid.NewGuid());
+        var response = await _productController.GetAsync(Guid.NewGuid());
 
         // Assert
         Assert.NotNull(response);
@@ -67,7 +67,7 @@ public class ProductControllerTest
             .ReturnsAsync((Product) null);
         
         // Act
-        var response = await _productController.Get(Guid.NewGuid());
+        var response = await _productController.GetAsync(Guid.NewGuid());
 
         // Assert
         Assert.NotNull(response);
@@ -103,7 +103,7 @@ public class ProductControllerTest
             .Setup(x => x.UpdateAsync(It.IsAny<Product>()));
         
         // Act
-        var response = await _productController.Put(Guid.NewGuid(), new Product());
+        var response = await _productController.Put( new Product());
 
         // Assert
         Assert.NotNull(response);
@@ -123,7 +123,7 @@ public class ProductControllerTest
             .Setup(x => x.UpdateAsync(It.IsAny<Product>()));
         
         // Act
-        var response = await _productController.Put(Guid.NewGuid(), new Product());
+        var response = await _productController.Put(new Product());
 
         // Assert
         Assert.NotNull(response);
@@ -141,7 +141,7 @@ public class ProductControllerTest
             .Setup(x => x.DeleteAsync(It.IsAny<Product>()));
         
         // Act
-        var response = await _productController.Delete(Guid.NewGuid());
+        var response = await _productController.Delete( new Product());
 
         // Assert
         Assert.NotNull(response);
@@ -159,7 +159,7 @@ public class ProductControllerTest
             .Setup(x => x.DeleteAsync(It.IsAny<Product>()));
         
         // Act
-        var response = await _productController.Delete(Guid.NewGuid());
+        var response = await _productController.Delete(new Product());
 
         // Assert
         Assert.NotNull(response);

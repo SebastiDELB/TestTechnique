@@ -7,11 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\TestTechnique.Core\TestTechnique.Core.csproj" />
+      <ProjectReference Include="..\TestTechnique.Persistence\TestTechnique.Persistence.csproj" />
     </ItemGroup>
 
 </Project>
