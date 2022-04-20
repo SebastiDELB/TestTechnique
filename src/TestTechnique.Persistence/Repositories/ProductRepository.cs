@@ -15,6 +15,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAsync()
     {
+
         return await _dbContext.Products.ToListAsync();
     }
 
@@ -36,7 +37,7 @@ public class ProductRepository : IProductRepository
 
         try
         {
-            var result = await _dbContext.Products.AddAsync(product);
+            var result = _dbContext.Products.AddAsync(product);
             await _dbContext.SaveChangesAsync();
             return product.Id;
         }

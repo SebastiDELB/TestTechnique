@@ -34,18 +34,38 @@ public class ProductController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> Post([FromForm] Product product)
+    public async Task<IActionResult> Post( Product product)
     {
-        var res = await _productRepository.AddAsync(product);
-        if(res == Guid.Empty)
-            return BadRequest();
-        _logger.LogInformation($"The {product.Name} has been added with the ID:{product.Id}.");
-        return Ok(res);
-        
+        try
+        {
+            if (product == null)
+            {
+                _logger.LogError("product object sent from client is null.");
+                return BadRequest("product object is null");
+            }
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid product object sent from client.");
+                return BadRequest("Invalid model object");
+            }
+            var res =  await _productRepository.AddAsync(product);
+            if(res == Guid.Empty)
+            {
+                _logger.LogError($"Something went wrong inside product add  repository");
+                return StatusCode(500, "Internal server error");
+            }
+            _logger.LogInformation($"The {product.Name} has been added with the ID:{product.Id}.");
+            return Ok();
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError($"Something went wrong inside product add action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
     }
     
-    [HttpPut]
-    public async Task<IActionResult> Put([FromForm] Product product)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(Guid id, [FromForm] Product product)
     {
         try
         {

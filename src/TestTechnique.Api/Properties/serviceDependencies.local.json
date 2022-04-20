@@ -5,6 +5,7 @@
       "secretStore": null,
       "containerName": "postgresql",
       "containerImage": "postgres",
+      "resourceId": null,
       "type": "postgresql.container",
       "connectionId": "Seb"
     }

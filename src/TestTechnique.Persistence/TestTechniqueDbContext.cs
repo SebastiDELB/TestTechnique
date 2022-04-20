@@ -3,7 +3,7 @@ using TestTechnique.Core.Models;
 
 namespace TestTechnique.Persistence;
 
-public class TestTechniqueDbContext : DbContext
+public sealed class TestTechniqueDbContext : DbContext
 {
     public DbSet<Product> Products { get; set; }
 
