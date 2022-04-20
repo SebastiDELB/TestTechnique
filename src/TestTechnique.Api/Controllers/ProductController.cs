@@ -18,12 +18,21 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    [Route("[controller]/getone")]
+    public async Task<IActionResult> GetAsync()
     {
         var products = await _productRepository.GetAsync();
         return Ok(products);
     }
+
     
+    [HttpGet]
+    public async Task<IActionResult> GetOneAsync()
+    {
+        var product = await _productRepository.GetOneAsync();
+        return Ok(product);
+    } 
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetAsync([FromRoute] Guid id)
     {
@@ -84,13 +93,15 @@ public class ProductController : ControllerBase
     {
         try
         {
-            await _productRepository.DeleteAsync(id);
+            var res =  await _productRepository.DeleteAsync(id);
+            if(res == 0)
+                return NotFound();
             _logger.LogInformation($"The product with ID: {id} has been deleted.");
             return Ok();
         }
         catch
         {
-            return NotFound();
+            return BadRequest();
         }
     }
 }

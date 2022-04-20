@@ -31,7 +31,7 @@ public class ProductControllerTest
             .ReturnsAsync(new List<Product>());
         
         // Act
-        var response = await _productController.Get();
+        var response = await _productController.GetAsync();
 
         // Assert
         Assert.NotNull(response);
@@ -91,10 +91,9 @@ public class ProductControllerTest
         var response = await _productController.Post(product1);
 
         // Assert
-      //  Assert.NotNull(response);
-        var content = Assert.IsAssignableFrom<CreatedAtActionResult>(response);
-       // Assert.NotNull(content.Value);
-        //Assert.Equal("Post", content.ActionName);
+        Assert.NotNull(response);
+        var content = Assert.IsAssignableFrom<ObjectResult>(response);
+        Assert.NotNull(content.Value);
     }
     
     [Fact]
@@ -107,8 +106,19 @@ public class ProductControllerTest
         _productRepository
             .Setup(x => x.UpdateAsync(It.IsAny<Product>()));
 
+        var dd = _productController.Post(new Product()
+        {
+            Id = Guid.NewGuid(),
+            Name = "bonjour",
+            Description = "op",
+            Price = 8
+        }) ;
+
+        var p = _productController.GetAsync();
+        if (p != null)
+            p.ToString();
         // Act
-        var response = await _productController.Put(Guid.NewGuid() ,new Product()) ;
+        var response = await _productController.Put(Guid.NewGuid() , new Product() ) ;
 
         // Assert
         Assert.NotNull(response);
@@ -139,18 +149,18 @@ public class ProductControllerTest
     public async Task Delete()
     {
         // Arrange
-        _productRepository
+         _productRepository
             .Setup(x => x.GetAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Product());
         _productRepository
-            .Setup(x => x.DeleteAsync(It.IsAny<Product>()));
-        
+            .Setup(x => x.DeleteAsync(It.IsAny<Guid>()));
         // Act
-        var response = await _productController.Delete( new Product());
+        
+        var response = await _productController.Delete(It.IsAny<Guid>());
 
         // Assert
         Assert.NotNull(response);
-        Assert.IsAssignableFrom<NoContentResult>(response);
+        Assert.IsAssignableFrom<OkResult>(response);
     }
     
     [Fact]
@@ -161,10 +171,10 @@ public class ProductControllerTest
             .Setup(x => x.GetAsync(It.IsAny<Guid>()))
             .ReturnsAsync((Product) null);
         _productRepository
-            .Setup(x => x.DeleteAsync(It.IsAny<Product>()));
+            .Setup(x => x.DeleteAsync(It.IsAny<Guid>()));
         
         // Act
-        var response = await _productController.Delete(new Product());
+        var response = await _productController.Delete(Guid.NewGuid());
 
         // Assert
         Assert.NotNull(response);

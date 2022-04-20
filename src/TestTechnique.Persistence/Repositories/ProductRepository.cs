@@ -26,7 +26,13 @@ public class ProductRepository : IProductRepository
             return new Product();
         return res;
     }
-
+    public async Task<Product> GetOneAsync()
+    {
+        var res = await _dbContext.Products.FindAsync();
+        if (res == null)
+            return new Product();
+        return res;
+    }
     public Task<Product> GetAsync(Guid id, bool asTracking)
     {
         throw new NotImplementedException();
@@ -88,7 +94,7 @@ public class ProductRepository : IProductRepository
         }
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<int> DeleteAsync(Guid id)
     {
         var result = await _dbContext.Products
                  .FirstOrDefaultAsync(p => p.Id == id);
@@ -96,7 +102,9 @@ public class ProductRepository : IProductRepository
         {
             _dbContext.Products.Remove(result);
             await _dbContext.SaveChangesAsync();
+            return 1;
         }
+        return 0;
     }
 
     public async Task DeleteAsync(IEnumerable<Product> products)
