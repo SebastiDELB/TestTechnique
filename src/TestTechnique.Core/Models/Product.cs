@@ -1,11 +1,20 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TestTechnique.Core.Models;
 
+[Table("Product")]
 public class Product : IEquatable<Product>
 {
-    [Key] public Guid Id { get; set; }
-    [MaxLength(255)] public string Name { get; set; }
+    
+    [Key] 
+    public Guid Id { get; set; }
+
+    [NotNull]
+    [MaxLength(255)] 
+    public string Name { get; set; }
+    [NotNull]
     public string Description { get; set; }
     public int Price { get; set; }
 

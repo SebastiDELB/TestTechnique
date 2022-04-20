@@ -11,11 +11,11 @@ public class ProductRepository : IProductRepository
     public ProductRepository(TestTechniqueDbContext dbContext)
     {
         _dbContext = dbContext;
+        _dbContext.Database.EnsureCreated();
     }
 
     public async Task<IEnumerable<Product>> GetAsync()
     {
-
         return await _dbContext.Products.ToListAsync();
     }
 
@@ -32,20 +32,7 @@ public class ProductRepository : IProductRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Guid> AddAsync(Product product)
-    {
-
-        try
-        {
-            var result = _dbContext.Products.AddAsync(product);
-            await _dbContext.SaveChangesAsync();
-            return product.Id;
-        }
-        catch
-        {
-            return Guid.Empty;
-        }
-    }
+    
 
     public async Task<IEnumerable<Guid>> AddAsync(IEnumerable<Product> products)
     {
@@ -78,6 +65,7 @@ public class ProductRepository : IProductRepository
             result.Description = product.Description;
             result.Price = product.Price;
 
+             _dbContext.Update(result);
             await _dbContext.SaveChangesAsync();
         }
     }
@@ -134,9 +122,32 @@ public class ProductRepository : IProductRepository
 
         return null;
     }
-
-    Task<Guid> IEntityRepository<Product>.AddAsync(Product entity)
+    
+    async  Task<Guid> IEntityRepository<Product>.AddAsync(Product product)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = _dbContext.Products.Add(product);
+            await _dbContext.SaveChangesAsync();
+            return Guid.NewGuid();
+        }
+        catch
+        {
+            return Guid.Empty;
+        }
+    }
+    public async Task<Guid> AddAsync(Product product)
+    {
+
+        try
+        {
+            var result = _dbContext.Products.Add(product);
+            await _dbContext.SaveChangesAsync();
+            return Guid.NewGuid();
+        }
+        catch
+        {
+            return Guid.Empty;
+        }
     }
 }
