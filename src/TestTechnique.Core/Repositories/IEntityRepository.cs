@@ -9,6 +9,6 @@ public interface IEntityRepository<T> where T : class
     public Task<IEnumerable<Guid>> AddAsync(IEnumerable<T> entities);
     public Task UpdateAsync(T entity);
     public Task UpdateAsync(IEnumerable<T> entities);
-    public Task DeleteAsync(T entity);
+    public Task DeleteAsync(Guid id);
     public Task DeleteAsync(IEnumerable<T> entities);
 }

@@ -88,10 +88,10 @@ public class ProductRepository : IProductRepository
         }
     }
 
-    public async Task DeleteAsync(Product product)
+    public async Task DeleteAsync(Guid id)
     {
         var result = await _dbContext.Products
-                 .FirstOrDefaultAsync(p => p.Id == product.Id);
+                 .FirstOrDefaultAsync(p => p.Id == id);
         if (result != null)
         {
             _dbContext.Products.Remove(result);
@@ -125,20 +125,6 @@ public class ProductRepository : IProductRepository
     
     async  Task<Guid> IEntityRepository<Product>.AddAsync(Product product)
     {
-        try
-        {
-            var result = _dbContext.Products.Add(product);
-            await _dbContext.SaveChangesAsync();
-            return Guid.NewGuid();
-        }
-        catch
-        {
-            return Guid.Empty;
-        }
-    }
-    public async Task<Guid> AddAsync(Product product)
-    {
-
         try
         {
             var result = _dbContext.Products.Add(product);

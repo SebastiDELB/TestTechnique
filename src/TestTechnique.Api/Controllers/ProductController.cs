@@ -79,21 +79,18 @@ public class ProductController : ControllerBase
         }
     }
     
-    [HttpDelete]
-    public async Task<IActionResult> Delete( [FromForm] Product product)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
-            await _productRepository.DeleteAsync(product);
-            _logger.LogInformation($"The product with ID: {product.Id} has been deleted.");
+            await _productRepository.DeleteAsync(id);
+            _logger.LogInformation($"The product with ID: {id} has been deleted.");
             return Ok();
         }
         catch
         {
             return NotFound();
         }
-
-        
-       
     }
 }
